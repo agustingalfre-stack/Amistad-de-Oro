@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>⚽ Amistad de Oro - Administración</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background: #222221; color: #eee; padding: 20px; }
+    h1 { color: #ffffff; }
+    h2 { color: #222221; }
+    .card { background: #b2b2b2; border: 1px solid #333; border-radius: 10px; margin-top: 20px; padding: 15px; }
+    .btn { border-radius: 8px; }
+    input { background: #888787 !important; color: #fff !important; border: 1px solid #444 !important; }
+    ul li { background: #2a2a2a; margin-top: 5px; border: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="text-center mb-4">⚽ Amistad de Oro</h1>
+
+    <!-- SUBSEDES -->
+    <div class="card">
+      <h2>🏟️ Subsedes</h2>
+      <div class="input-group mb-3">
+        <input type="text" id="nombreSubsede" class="form-control" placeholder="Nombre de la subsede">
+        <button class="btn btn-success" onclick="agregarSubsede()">Agregar</button>
+      </div>
+      <ul id="listaSubsedes" class="list-group"></ul>
+    </div>
+  </div>
+
+  <script>
+    const API = 'http://localhost:3000';
+
+    // Cargar todas las subsedes
+    async function cargarSubsedes() {
+      const res = await fetch(`${API}/subsede`);
+      const subsedes = await res.json();
+      const lista = document.getElementById('listaSubsedes');
+      lista.innerHTML = '';
+
+      subsedes.forEach(s => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item d-flex justify-content-between align-items-center';
+        li.innerHTML = `
+          <span id="subsede-${s.id}">${s.nombre}</span>
+          <div>
+            <a href="subsede.html?id=${s.id}" class="btn btn-sm btn-success me-2">📋 Ver</a>
+            <button class="btn btn-sm btn-primary me-1" onclick="editarSubsedeInline(${s.id})">✏️</button>
+            <button class="btn btn-sm btn-danger" onclick="eliminarSubsede(${s.id})">❌</button>
+          </div>`;
+        lista.appendChild(li);
+      });
+    }
+
+    // Agregar una nueva subsede
+    async function agregarSubsede() {
+      const nombre = document.getElementById('nombreSubsede').value.trim();
+      if (!nombre) return alert('Ingresá el nombre');
+      await fetch(`${API}/subsede`, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ nombre })
+      });
+      document.getElementById('nombreSubsede').value = '';
+      cargarSubsedes();
+    }
+
+    // Eliminar subsede
+    async function eliminarSubsede(id) {
+      if (!confirm('¿Eliminar esta subsede y todo lo que contiene?')) return;
+      await fetch(`${API}/subsede/${id}`, { method: 'DELETE' });
+      cargarSubsedes();
+    }
+
+    // Editar subsede en línea
+    async function editarSubsedeInline(id) {
+      const span = document.getElementById(`subsede-${id}`);
+      const nombreActual = span.textContent;
+      span.innerHTML = `<input type="text" value="${nombreActual}" id="edit-${id}" class="form-control form-control-sm">`;
+      const input = document.getElementById(`edit-${id}`);
+      input.focus();
+
+      input.addEventListener("keydown", async e => {
+        if (e.key === "Enter") {
+          const nuevoNombre = input.value.trim();
+          if (!nuevoNombre) return alert('Ingresá un nombre válido');
+          await fetch(`${API}/subsede/${id}`, {
+            method: 'PUT',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({ nombre: nuevoNombre })
+          });
+          cargarSubsedes();
+        } else if (e.key === "Escape") {
+          span.textContent = nombreActual;
+        }
+      });
+
+      document.addEventListener("click", function handler(e) {
+        if (!input.contains(e.target)) {
+          span.textContent = nombreActual;
+          document.removeEventListener("click", handler);
+        }
+      });
+    }
+
+    cargarSubsedes();
+  </script>
+</body>
+</html>

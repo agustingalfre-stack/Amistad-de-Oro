@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>⚽ Partido - Amistad de Oro</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+body { background:#111; color:#eee; padding:20px;}
+.card { background:#b1b1b1; border:1px solid #333; border-radius:10px; padding:20px; max-width:800px; margin:auto; box-shadow:0 0 10px rgba(255,255,255,0.05);}
+h1,h2 { color:#fff; text-align:center; font-weight:700;}
+input { background:#888787 !important; color:#fff !important; border:1px solid #444 !important;}
+.btn { border-radius:8px; font-weight:600;}
+.btn-guardar { background:#28a745; border:none;}
+.btn-guardar:hover { background:#34d058;}
+.btn-volver { background:#6c757d; border:none;}
+.btn-volver:hover { background:#868e96;}
+.versus { font-size:1.8rem; font-weight:bold; margin:15px 0;}
+.resultado-inputs { display:flex; justify-content:center; align-items:center; gap:20px; margin-bottom:20px;}
+.resultado-inputs input { width:70px; font-size:1.4rem; text-align:center; font-weight:bold;}
+.fecha-hora { text-align:center; color:#222221; margin-bottom:15px;}
+.list-group-item { cursor: grab; user-select: none;}
+.list-group-item.dragging { opacity:0.5;}
+.alineacion h6 { color:#fff;}
+.goles-container { display:flex; align-items:center; gap:5px;}
+.goles-num { width:40px; text-align:center; font-weight:bold; font-size:1rem;}
+.btn-goles { padding:0 5px; font-weight:bold;}
+.d-flex {display:flex;}
+.justify-content-between {justify-content:space-between;}
+.align-items-center {align-items:center;}
+.cambiado { background:#007bff33 !important; color:#fff; font-weight:bold; }
+#cronometro { text-align:center; font-size:1.5rem; margin:10px 0;}
+</style>
+</head>
+<body>
+<div class="container">
+  <button class="btn btn-volver mb-3" onclick="history.back()">⬅️ Volver</button>
+
+  <!-- Card Resultado -->
+  <div class="card">
+    <h1 id="tituloPartido">Cargando partido...</h1>
+    <p class="fecha-hora" id="detalleFechaHora"></p>
+
+    <form id="formDetalle">
+      <div class="resultado-inputs">
+        <input type="number" id="goles1" placeholder="0" min="0">
+        <span class="versus">VS</span>
+        <input type="number" id="goles2" placeholder="0" min="0">
+      </div>
+
+      <div class="text-center">
+        <button type="submit" class="btn btn-guardar px-4">💾 Guardar Resultado</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Cronómetro -->
+  <div class="card mt-3">
+    <h2>Cronómetro</h2>
+    <div id="cronometro">00:00</div>
+    <div class="text-center mt-2">
+      <button class="btn btn-primary me-2" id="btnIniciar">▶️ Iniciar</button>
+      <button class="btn btn-warning me-2" id="btnPausar">⏸ Pausar</button>
+      <button class="btn btn-danger" id="btnReiniciar">🔄 Reiniciar</button>
+    </div>
+  </div>
+
+  <!-- Card Jugadores -->
+  <div class="card mt-4" id="cardJugadores">
+    <h2>Alineación de Jugadores</h2>
+    <div class="row">
+      <div class="col-md-6">
+        <h5 id="tituloLocal">Local</h5>
+        <div class="alineacion" id="alineacionLocal">
+          <div class="jugadores-titulares mb-2">
+            <h6>Titulares</h6>
+            <ul class="list-group" id="titularesLocal"></ul>
+          </div>
+          <div class="jugadores-suplentes mt-2">
+            <h6>Suplentes</h6>
+            <ul class="list-group" id="suplentesLocal"></ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <h5 id="tituloVisitante">Visitante</h5>
+        <div class="alineacion" id="alineacionVisitante">
+          <div class="jugadores-titulares mb-2">
+            <h6>Titulares</h6>
+            <ul class="list-group" id="titularesVisitante"></ul>
+          </div>
+          <div class="jugadores-suplentes mt-2">
+            <h6>Suplentes</h6>
+            <ul class="list-group" id="suplentesVisitante"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="text-center mt-3">
+      <button class="btn btn-guardar" id="guardarAlineacion">💾 Guardar Alineación, Goles y Cambios</button>
+    </div>
+  </div>
+
+  <!-- Historial de incidencias -->
+  <div class="card mt-4" id="cardEventos">
+    <h2>Historial de Incidencias</h2>
+    <ul class="list-group" id="listaEventos"></ul>
+  </div>
+</div>
+
+<!-- Modal reemplazo -->
+<div class="modal fade" id="modalReemplazo" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content bg-dark text-light">
+      <div class="modal-header">
+        <h5 class="modal-title">Seleccionar jugador a reemplazar</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="modalCuerpo"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const params = new URLSearchParams(window.location.search);
+const partidoId = parseInt(params.get("id"));
+const API = "http://localhost:3000";
+let partidoActual = null;
+let cambiosAlineacion = { local: [], visitante: [] };
+let segundos = 0;
+let cronometroInterval = null;
+let eventosPartido = [];
+
+// ================= Cronómetro =================
+function actualizarCronometro(){
+  const min = Math.floor(segundos/60).toString().padStart(2,'0');
+  const sec = (segundos%60).toString().padStart(2,'0');
+  document.getElementById("cronometro").textContent = `${min}:${sec}`;
+}
+
+document.getElementById("btnIniciar").addEventListener("click", ()=>{ 
+  if(cronometroInterval) return; 
+  cronometroInterval = setInterval(()=>{ segundos++; actualizarCronometro(); },1000); 
+});
+document.getElementById("btnPausar").addEventListener("click", ()=>{ 
+  clearInterval(cronometroInterval); cronometroInterval=null; 
+});
+document.getElementById("btnReiniciar").addEventListener("click", ()=>{ 
+  clearInterval(cronometroInterval); cronometroInterval=null; segundos=0; actualizarCronometro(); 
+});
+
+// ================= Eventos =================
+function agregarEventoLista(evento){
+  const lista = document.getElementById("listaEventos");
+  
+  const li = document.createElement("li");
+  li.className = "list-group-item d-flex justify-content-between align-items-center mb-1 rounded";
+  
+  if(evento.tipo === "gol") li.style.background = "#19875433"; // verde claro
+  if(evento.tipo === "reemplazo") li.style.background = "#0d6efd33"; // azul claro
+  
+  const contenido = document.createElement("div");
+  if(evento.tipo==="gol") contenido.textContent = `${evento.equipo.toUpperCase()} - ⚽ ${evento.jugador}`;
+  else contenido.textContent = `${evento.equipo.toUpperCase()} - 🔄 ${evento.reemplazado} → ${evento.jugador}`;
+  
+  const tiempo = document.createElement("span");
+  tiempo.className = "badge bg-secondary rounded-pill";
+  tiempo.textContent = evento.tiempo;
+  
+  li.appendChild(contenido);
+  li.appendChild(tiempo);
+  lista.appendChild(li);
+  lista.scrollTop = lista.scrollHeight;
+}
+
+function registrarIncidencia(tipo, jugadorLi, equipo, reemplazadoNombre=null){
+  const tiempo = document.getElementById("cronometro").textContent;
+  let jugadorNombre = jugadorLi.querySelector("span")?.textContent || jugadorLi.textContent;
+  let evento = { tipo, equipo, jugador: jugadorNombre, tiempo };
+  if(reemplazadoNombre) evento.reemplazado = reemplazadoNombre;
+  eventosPartido.push(evento);
+  agregarEventoLista(evento);
+}
+
+// ================= Cargar partido =================
+async function cargarPartido(){
+  const res = await fetch(`${API}/fixture/partido/${partidoId}`);
+  if(!res.ok){ document.getElementById("tituloPartido").innerText="Partido no encontrado"; return; }
+  const partido = await res.json();
+  partidoActual = partido;
+  document.getElementById("tituloPartido").innerText = `${partido.equipoLocalNombre} 🆚 ${partido.equipoVisitanteNombre}`;
+  document.getElementById("detalleFechaHora").innerText = `📅 ${partido.fecha} ⏰ ${partido.hora}`;
+  document.getElementById("goles1").value = partido.golesLocal ?? "";
+  document.getElementById("goles2").value = partido.golesVisitante ?? "";
+  await cargarJugadoresPartido();
+}
+
+// ================= Guardar resultado =================
+document.getElementById("formDetalle").addEventListener("submit", async e=>{
+  e.preventDefault();
+  const golesLocal = parseInt(document.getElementById("goles1").value);
+  const golesVisitante = parseInt(document.getElementById("goles2").value);
+  const totalLocal = [...document.querySelectorAll("#titularesLocal .goles-num, #suplentesLocal .goles-num")].reduce((sum,s)=>sum+parseInt(s.textContent),0);
+  const totalVisitante = [...document.querySelectorAll("#titularesVisitante .goles-num, #suplentesVisitante .goles-num")].reduce((sum,s)=>sum+parseInt(s.textContent),0);
+  if(totalLocal !== golesLocal || totalVisitante !== golesVisitante){
+    if(!confirm("⚠️ La suma de goles por jugador no coincide con el resultado. ¿Querés continuar?")) return;
+  }
+  const body = { subsedeId: partidoActual.subsedeId, partido: partidoActual.id, local: partidoActual.local, visitante: partidoActual.visitante, golesLocal, golesVisitante, observaciones:"" };
+  const res = await fetch(`${API}/resultados`, { method:"POST", headers:{ "Content-Type":"application/json"}, body: JSON.stringify(body) });
+  if(res.ok){ alert("✅ Resultado guardado correctamente"); history.back(); }
+  else alert("⚠️ Error al guardar el resultado");
+});
+
+// ================= Cargar jugadores =================
+async function cargarJugadoresPartido(){
+  if(!partidoActual) return;
+  const resLocal = await fetch(`${API}/jugadores/${partidoActual.local}`);
+  const jugadoresLocal = await resLocal.json();
+  const resVisitante = await fetch(`${API}/jugadores/${partidoActual.visitante}`);
+  const jugadoresVisitante = await resVisitante.json();
+
+  jugadoresLocal.sort((a,b)=>a.numeroCamiseta-b.numeroCamiseta);
+  jugadoresVisitante.sort((a,b)=>a.numeroCamiseta-b.numeroCamiseta);
+
+  const titularesLocal = document.getElementById("titularesLocal");
+  const suplentesLocal = document.getElementById("suplentesLocal");
+  const titularesVisitante = document.getElementById("titularesVisitante");
+  const suplentesVisitante = document.getElementById("suplentesVisitante");
+
+  titularesLocal.innerHTML=""; suplentesLocal.innerHTML="";
+  titularesVisitante.innerHTML=""; suplentesVisitante.innerHTML="";
+
+  const crearLi=(jugador, equipo)=>{
+    const li=document.createElement("li");
+    li.className="list-group-item d-flex justify-content-between align-items-center";
+    li.dataset.id = jugador.id;
+    li.dataset.equipo = equipo;
+    const nombre=document.createElement("span");
+    nombre.textContent=`${jugador.numeroCamiseta} - ${jugador.nombre} ${jugador.apellido}`;
+    const contGoles=document.createElement("div"); contGoles.className="goles-container";
+    const btnMenos=document.createElement("button"); btnMenos.type="button"; btnMenos.className="btn btn-sm btn-outline-light btn-goles"; btnMenos.textContent="-";
+    const spanGoles=document.createElement("span"); spanGoles.className="goles-num"; spanGoles.textContent="0";
+    const btnMas=document.createElement("button"); btnMas.type="button"; btnMas.className="btn btn-sm btn-outline-light btn-goles"; btnMas.textContent="+";
+
+    btnMas.addEventListener("click", ()=>{
+      spanGoles.textContent = parseInt(spanGoles.textContent)+1;
+      const equipoNombre = equipo==="local"?"local":"visitante";
+      registrarIncidencia("gol", li, equipoNombre);
+      actualizarGolesTotales();
+    });
+    btnMenos.addEventListener("click", ()=>{
+      spanGoles.textContent = Math.max(0,parseInt(spanGoles.textContent)-1);
+      actualizarGolesTotales();
+    });
+
+    contGoles.append(btnMenos, spanGoles, btnMas);
+    li.append(nombre, contGoles);
+    return li;
+  };
+
+  jugadoresLocal.forEach((j,i)=>{ if(i<11) titularesLocal.appendChild(crearLi(j,"local")); else suplentesLocal.appendChild(crearLi(j,"local")); });
+  jugadoresVisitante.forEach((j,i)=>{ if(i<11) titularesVisitante.appendChild(crearLi(j,"visitante")); else suplentesVisitante.appendChild(crearLi(j,"visitante")); });
+
+  ["titularesLocal","suplentesLocal","titularesVisitante","suplentesVisitante"].forEach(habilitarDragDrop);
+}
+
+// ================= Drag & Drop =================
+function habilitarDragDrop(ulId){
+  const ul = document.getElementById(ulId);
+  
+  ul.querySelectorAll("li").forEach(li => {
+    li.draggable = true;
+
+    li.addEventListener("dragstart", e => {
+      li.classList.add("dragging");
+      e.dataTransfer.setData("text/plain", li.dataset.id);
+      e.dataTransfer.setData("origen", ulId);
+    });
+
+    li.addEventListener("dragend", () => li.classList.remove("dragging"));
+
+    li.addEventListener("dragover", e => e.preventDefault());
+    li.addEventListener("drop", e => {
+      e.preventDefault();
+      const draggingId = e.dataTransfer.getData("text/plain");
+      const origenId = e.dataTransfer.getData("origen");
+      const draggingItem = document.querySelector(`[data-id='${draggingId}']`);
+      
+      if(draggingItem && origenId !== ulId){
+        const equipo = ulId.includes("Local") ? "local" : "visitante";
+        const origenEsSuplente = origenId.includes("suplentes");
+        const titularEsTitular = ulId.includes("titulares");
+
+        if(origenEsSuplente && titularEsTitular){
+          const padresu = draggingItem.parentElement;
+          const padreTitular = li.parentElement;
+          const idx = Array.from(padreTitular.children).indexOf(li);
+
+          padreTitular.removeChild(li);
+          padresu.appendChild(li);
+          padreTitular.insertBefore(draggingItem, padreTitular.children[idx]);
+
+          li.classList.add("cambiado");
+          draggingItem.classList.add("cambiado");
+
+          if(!cambiosAlineacion[equipo].includes(li.dataset.id)) cambiosAlineacion[equipo].push(li.dataset.id);
+          if(!cambiosAlineacion[equipo].includes(draggingItem.dataset.id)) cambiosAlineacion[equipo].push(draggingItem.dataset.id);
+
+          registrarIncidencia("reemplazo", draggingItem, equipo, li.querySelector("span").textContent);
+        }
+      }
+    });
+  });
+}
+
+function actualizarGolesTotales(){
+  const totalLocal=[...document.querySelectorAll("#titularesLocal .goles-num, #suplentesLocal .goles-num")]
+    .reduce((sum,s)=>sum+parseInt(s.textContent),0);
+  const totalVisitante=[...document.querySelectorAll("#titularesVisitante .goles-num, #suplentesVisitante .goles-num")]
+    .reduce((sum,s)=>sum+parseInt(s.textContent),0);
+  document.getElementById("goles1").value=totalLocal;
+  document.getElementById("goles2").value=totalVisitante;
+}
+
+// ================= Reemplazos con modal =================
+function mostrarModalReemplazo(nuevoJugador, titularesList, equipo){
+  const modalCuerpo=document.getElementById("modalCuerpo");
+  modalCuerpo.innerHTML="";
+  [...titularesList.children].forEach(li=>{
+    const btn=document.createElement("button");
+    btn.type="button";
+    btn.className="btn btn-secondary btn-sm m-1";
+    btn.textContent = li.querySelector("span").textContent;
+    btn.addEventListener("click", ()=>{
+      const suplentesList = document.getElementById(titularesList.id.replace("titulares","suplentes"));
+      li.classList.add("cambiado");
+      nuevoJugador.classList.add("cambiado");
+      suplentesList.appendChild(li);
+      titularesList.appendChild(nuevoJugador);
+
+      if(!cambiosAlineacion[equipo].includes(li.dataset.id)) cambiosAlineacion[equipo].push(li.dataset.id);
+      if(!cambiosAlineacion[equipo].includes(nuevoJugador.dataset.id)) cambiosAlineacion[equipo].push(nuevoJugador.dataset.id);
+
+      registrarIncidencia("reemplazo", nuevoJugador, equipo, li.querySelector("span").textContent);
+
+      bootstrap.Modal.getInstance(document.getElementById("modalReemplazo")).hide();
+    });
+    modalCuerpo.appendChild(btn);
+  });
+
+  const modal = new bootstrap.Modal(document.getElementById("modalReemplazo"));
+  modal.show();
+}
+
+// ================= Guardar alineación =================
+document.getElementById("guardarAlineacion").addEventListener("click", async ()=>{
+  const extraerJugadores=(ul)=>[...ul.querySelectorAll("li")].map(li=>({id:li.dataset.id,nombre:li.querySelector("span").textContent,goles:parseInt(li.querySelector(".goles-num").textContent)}));
+  const body={
+    partidoId: partidoActual.id,
+    local:{ titulares: extraerJugadores(document.getElementById("titularesLocal")), suplentes: extraerJugadores(document.getElementById("suplentesLocal")) },
+    visitante:{ titulares: extraerJugadores(document.getElementById("titularesVisitante")), suplentes: extraerJugadores(document.getElementById("suplentesVisitante")) },
+    cambios: cambiosAlineacion,
+    eventos: eventosPartido
+  };
+  const res=await fetch(`${API}/partido/alineacion`, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body) });
+  if(res.ok){ alert("✅ Alineación, goles y cambios guardados correctamente"); cambiosAlineacion={local:[],visitante:[]}; }
+  else alert("⚠️ Error al guardar la alineación");
+});
+
+cargarPartido();
+</script>
+</body>
+</html>

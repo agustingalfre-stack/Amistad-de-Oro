@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "nombre": "Centro Social",
+    "subsedeId": 1,
+    "escudo": "/uploads/1762806430063.png"
+  },
+  {
+    "id": 2,
+    "nombre": "Tiro Federal",
+    "subsedeId": 1,
+    "escudo": "/uploads/1762829865403.png"
+  },
+  {
+    "id": 3,
+    "nombre": "9 de Freyre",
+    "subsedeId": 1,
+    "escudo": "/uploads/1762826537080.png"
+  },
+  {
+    "id": 4,
+    "nombre": "Sportivo Suardi",
+    "subsedeId": 1,
+    "escudo": "/uploads/1762826811044.png"
+  }
+]

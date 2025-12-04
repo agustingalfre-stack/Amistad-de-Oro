@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>📍 Sub Sede - Amistad de Oro</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+  <div class="container mb-3">
+    <h1 id="nombreSubsede">Cargando...</h1>
+  </div>
+
+  <div class="container">
+    <div class="d-flex justify-content-between mb-3">
+      <button class="btn-icon btn-icon-primary" onclick="volver()">
+  <svg viewBox="0 0 24 24" width="16" height="16"><path d="M15 18l-6-6 6-6"/></svg>
+  Volver
+</button>
+    </div>
+
+    <!-- CARD EQUIPOS -->
+<div class="card">
+  <h2>Equipos</h2>
+  <div class="input-group mb-3">
+    <input type="text" id="nombreEquipo" class="form-control" placeholder="Nombre del equipo">
+    <input type="file" id="escudoEquipo" accept="image/*" class="form-control">
+<select id="grupoEquipo" class="form-control">
+  <option value="">-- Grupo --</option>
+  <option value="A">A</option>
+  <option value="B">B</option>
+  <option value="C">C</option>
+  <option value="D">D</option>
+</select>
+    <button class="btn-icon btn-icon-success" onclick="agregarEquipo()">
+      <svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 5v14M5 12h14"/></svg>
+      Agregar
+    </button>
+  </div>
+  <ul id="listaEquipos" class="list-group"></ul>
+</div>
+
+    <!-- CARD FIXTURE -->
+    <div class="card">
+  <h2>Fixture</h2>
+  <div class="row g-2 mb-3">
+  <div class="col-md-2">
+    <select id="selectGrupo" class="form-control">
+      <option value="">--Seleccionar Grupo--</option>
+    </select>
+  </div>
+
+  <div class="col-md-2">
+    <select id="equipoLocal" class="form-control">
+      <option value="">--Local--</option>
+    </select>
+  </div>
+
+  <div class="col-md-2">
+    <select id="equipoVisitante" class="form-control">
+      <option value="">--Visitante--</option>
+    </select>
+  </div>
+
+  <div class="col-md-2">
+    <select id="Cancha" class="form-control">
+      <option value="">-- Cancha --</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+    </select>
+  </div>
+
+  <div class="col-md-2">
+    <input type="date" id="fechaPartido" class="form-control">
+  </div>
+
+  <div class="col-md-1">
+    <input type="time" id="horaPartido" class="form-control">
+  </div>
+
+  <div class="col-md-1 d-grid">
+    <button class="btn btn-success" id="btnGuardar" onclick="agregarPartido()">Agregar</button>
+  </div>
+</div>
+  
+  <table class="tabla-liquid">
+    <thead>
+      <tr>
+        <th>Cancha</th>
+        <th>Fecha</th>
+        <th>Hora</th>
+        <th>Local</th>
+        <th></th>
+        <th>Visitante</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody id="listaFixture">
+      <!-- Aquí se cargarán los partidos -->
+    </tbody>
+  </table>
+
+  <div class="d-flex justify-content-end mb-2">
+    <button class="btn-icon btn-icon-success" onclick="descargarPDF()">
+      <svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 5v14M5 12h14"/></svg>
+      Descargar PDF
+    </button>
+  </div>
+</div>
+
+    <!-- CARD RESULTADOS -->
+    <div class="card">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <h2 class="mb-0">Resultados</h2>
+  </div>
+  <table class="tabla-liquid">
+  <thead>
+    <tr>
+      <th>Cancha</th>
+      <th>Fecha</th>
+      <th>Hora</th>
+      <th>Local</th>
+      <th>⚽</th>
+      <th>⚽</th>
+      <th>Visitante</th>
+    </tr>
+  </thead>
+  <tbody id="listaResultados">
+    <!-- Aquí se cargarán los resultados -->
+  </tbody>
+</table>
+<div class="d-flex justify-content-end mt-3 mb-2">
+  <button class="btn-icon btn-icon-success" onclick="descargarResultadosPDF()">
+    <svg viewBox="0 0 24 24" width="16" height="16">
+      <path d="M12 5v14M5 12h14"/>
+    </svg>
+    Descargar PDF
+  </button>
+</div>
+    </div>
+
+    <!-- 🏆 CARD TABLA DE POSICIONES -->
+    <div class="card">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="mb-0">Tabla de Posiciones</h2>
+      </div>
+<div id="contenedorTablasPosiciones"></div>
+      <div class="d-flex justify-content-end mb-2">
+      <button class="btn-icon btn-icon-success" onclick="descargarPosicionesPDF()">
+  <svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 5v14M5 12h14"/></svg>
+  Descargar PDF
+</button>
+</div>
+  </div>
+
+  <script>
+const API = 'http://localhost:3000';
+const params = new URLSearchParams(window.location.search);
+const subsedeId = parseInt(params.get('id'));
+let equipos = [], fixture = [];
+let editandoId = null;
+
+// ---------- Cargar nombre de la subsede ----------
+async function cargarNombreSubsede() {
+  const nombreElem = document.getElementById('nombreSubsede');
+  try {
+    const res = await fetch(`${API}/subsede/${subsedeId}`);
+    const subsede = await res.json();
+    nombreElem.textContent = subsede.nombre || 'Sub Sede desconocida';
+  } catch {
+    nombreElem.textContent = 'Sub Sede desconocida';
+  }
+}
+
+// =======================
+// 🔹 EQUIPOS (agrupados por grupo)
+// =======================
+let equiposPorGrupo = {}; // 🔹 guardamos equipos agrupados
+
+async function cargarEquipos() {
+  try {
+    const res = await fetch(`${API}/equipos/${subsedeId}`);
+    equipos = await res.json();   // <-- CORRECCIÓN IMPORTANTE
+
+    const lista = document.getElementById('listaEquipos');
+    const selectLocal = document.getElementById('equipoLocal');
+    const selectVisitante = document.getElementById('equipoVisitante');
+    const selectGrupo = document.getElementById('selectGrupo');
+
+    // Limpiar lista y selects
+    lista.innerHTML = '';
+    selectLocal.innerHTML = '<option value="">-- Local --</option>';
+    selectVisitante.innerHTML = '<option value="">-- Visitante --</option>';
+    selectGrupo.innerHTML = '<option value="">-- Todos los grupos --</option>';
+
+    if (!equipos.length) {
+      lista.innerHTML = '<li class="list-group-item text-muted">No hay equipos cargados.</li>';
+      return;
+    }
+
+    // 🔹 Agrupar equipos por grupo
+    equiposPorGrupo = {};
+    equipos.forEach(eq => {
+      const g = eq.grupo || "Sin grupo";
+      if (!equiposPorGrupo[g]) equiposPorGrupo[g] = [];
+      equiposPorGrupo[g].push(eq);
+    });
+
+    // 🔹 Llenar select de grupos
+    for (const grupo of Object.keys(equiposPorGrupo)) {
+      const option = document.createElement('option');
+      option.value = grupo;
+      option.textContent = grupo;
+      selectGrupo.appendChild(option);
+    }
+
+    // 🔹 Renderizar lista completa y selects
+    renderEquipos(Object.keys(equiposPorGrupo));
+
+    // 🔹 Cambiar select de grupo filtra los equipos
+    selectGrupo.addEventListener('change', () => {
+      const grupoSeleccionado = selectGrupo.value;
+      if (grupoSeleccionado) {
+        renderEquipos([grupoSeleccionado]);
+      } else {
+        renderEquipos(Object.keys(equiposPorGrupo));
+      }
+    });
+
+  } catch (error) {
+    console.error('Error cargando equipos:', error);
+    mostrarToast('❌ Error cargando equipos', 'error');
+  }
+}
+
+// 🔹 Función para renderizar lista y selects según grupos filtrados
+function renderEquipos(gruposFiltrados) {
+  const lista = document.getElementById('listaEquipos');
+  const selectLocal = document.getElementById('equipoLocal');
+  const selectVisitante = document.getElementById('equipoVisitante');
+
+  lista.innerHTML = '';
+  selectLocal.innerHTML = '<option value="">-- Local --</option>';
+  selectVisitante.innerHTML = '<option value="">-- Visitante --</option>';
+
+  gruposFiltrados.forEach(grupo => {
+    const eqs = equiposPorGrupo[grupo];
+
+    // Lista visual
+    const titulo = document.createElement('li');
+    titulo.className = 'list-group-item fw-bold titulo-grupo';
+    titulo.textContent = `Grupo ${grupo}`;
+    lista.appendChild(titulo);
+
+    // Optgroups para selects
+    const optgroupLocal = document.createElement('optgroup');
+    optgroupLocal.label = `Grupo ${grupo}`;
+    const optgroupVisitante = document.createElement('optgroup');
+    optgroupVisitante.label = `Grupo ${grupo}`;
+
+    eqs.forEach(eq => {
+      const li = document.createElement('li');
+      li.className = 'list-group-item d-flex justify-content-between align-items-center';
+      li.innerHTML = `
+        <div class="d-flex align-items-center gap-2">
+          ${eq.escudo ? `<img src="${API}${eq.escudo}" alt="${eq.nombre}" width="50" height="50" class="escudo-equipo">` : ''}
+          <span id="equipo-nombre-${eq.id}" class="fw-semibold">${eq.nombre}</span>
+        </div>
+        <div>
+          <a href="jugadores.html?equipoId=${eq.id}&subsedeId=${subsedeId}" class="btn-icon btn-icon-success me-2">Jugadores</a>
+          <button class="btn-icon btn-icon-primary me-1" onclick="editarEquipoInline(${eq.id})">Editar</button>
+          <button class="btn-icon btn-icon-danger" onclick="eliminarEquipo(${eq.id})">Eliminar</button>
+        </div>
+      `;
+      lista.appendChild(li);
+
+      const optionL = document.createElement('option');
+      optionL.value = eq.id;
+      optionL.textContent = eq.nombre;
+      optgroupLocal.appendChild(optionL);
+
+      const optionV = document.createElement('option');
+      optionV.value = eq.id;
+      optionV.textContent = eq.nombre;
+      optgroupVisitante.appendChild(optionV);
+    });
+
+    selectLocal.appendChild(optgroupLocal);
+    selectVisitante.appendChild(optgroupVisitante);
+  });
+}
+
+// ➕ Agregar equipo
+async function agregarEquipo() {
+  const nombre = document.getElementById("nombreEquipo").value.trim();
+  const escudo = document.getElementById("escudoEquipo").files[0];
+  const grupo = document.getElementById("grupoEquipo").value;
+  if (!nombre || !escudo) return alert("Complete los campos");
+
+  const formData = new FormData();
+  formData.append("nombre", nombre);
+  formData.append("escudo", escudo);
+  formData.append("subsedeId", subsedeId);
+  formData.append("grupo", grupo);
+
+  await fetch(`${API}/equipos`, {
+    method: "POST",
+    body: formData
+  });
+
+  document.getElementById("nombreEquipo").value = "";
+  document.getElementById("escudoEquipo").value = "";
+  await cargarEquipos(); // 👈 esto actualiza la lista sin recargar la página
+}
+
+// 🗑️ Eliminar equipo
+async function eliminarEquipo(id) {
+  if (!confirm('¿Eliminar este equipo y todos sus jugadores?')) return;
+
+  try {
+    const res = await fetch(`${API}/equipos/${id}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error('Error al eliminar equipo');
+
+    // 🔹 1. Recargar lista de equipos
+    await cargarEquipos();
+
+    // 🔹 2. Recargar fixture filtrando partidos con equipos existentes
+    await cargarFixture();
+
+    // 🔹 3. Recargar resultados filtrando equipos eliminados
+    await cargarResultados();
+
+    // 🔹 4. Actualizar tabla de posiciones
+    await actualizarTablaPosiciones();
+
+    mostrarToast('🗑️ Equipo eliminado correctamente');
+
+  } catch (error) {
+    console.error(error);
+    mostrarToast('❌ No se pudo eliminar el equipo', 'error');
+  }
+}
+
+// ✏️ Editar equipo (inline con actualización instantánea)
+async function editarEquipoInline(id) {
+  const nombreSpan = document.getElementById(`equipo-nombre-${id}`);
+  const nombreActual = nombreSpan.textContent;
+
+  const li = nombreSpan.closest('li');
+  let escudoImg = li.querySelector('img');
+
+  // Contenedor de edición
+  const contenedor = document.createElement('div');
+  contenedor.className = 'd-flex align-items-center gap-2';
+
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.value = nombreActual;
+  input.className = 'form-control form-control-sm';
+  input.style.width = '150px';
+
+  const botonEscudo = document.createElement('button');
+  botonEscudo.className = 'btn btn-sm btn-outline-secondary';
+  botonEscudo.textContent = '📷 Escudo';
+
+  const fileInput = document.createElement('input');
+  fileInput.type = 'file';
+  fileInput.accept = 'image/*';
+  fileInput.style.display = 'none';
+
+  // Botón Guardar con SVG de disco
+const botonGuardar = document.createElement('button');
+botonGuardar.className = 'btn btn-sm btn-success';
+botonGuardar.innerHTML = `
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-save-fill me-1" viewBox="0 0 16 16">
+    <path d="M8 0a2 2 0 0 0-2 2v4H0v10h16V6h-6V2a2 2 0 0 0-2-2zM1 6h6V2H1v4zm7 0h6v8H8V6z"/>
+  </svg>
+  Guardar
+`;
+
+// Botón Cancelar con SVG de X
+const botonCancelar = document.createElement('button');
+botonCancelar.className = 'btn btn-sm btn-danger';
+botonCancelar.innerHTML = `
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-lg me-1" viewBox="0 0 16 16">
+    <path d="M2.146 2.146a.5.5 0 0 1 .708 0L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854a.5.5 0 0 1 0-.708z"/>
+  </svg>
+  Cancelar
+`;
+
+  contenedor.append(input, botonEscudo, botonGuardar, botonCancelar);
+  nombreSpan.replaceWith(contenedor);
+
+  botonEscudo.addEventListener('click', () => fileInput.click());
+
+  fileInput.addEventListener('change', () => {
+    const archivo = fileInput.files[0];
+    if (!archivo) return;
+    const preview = URL.createObjectURL(archivo);
+    if (escudoImg) {
+      escudoImg.src = preview;
+    } else {
+      escudoImg = document.createElement('img');
+      escudoImg.src = preview;
+      escudoImg.width = 50;
+      escudoImg.height = 50;
+      escudoImg.className = 'escudo-equipo';
+      contenedor.parentElement.insertBefore(escudoImg, contenedor);
+    }
+  });
+
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') guardarCambios();
+  });
+
+  botonGuardar.addEventListener('click', guardarCambios);
+  botonCancelar.addEventListener('click', () => contenedor.replaceWith(nombreSpan));
+
+  async function guardarCambios() {
+    const nuevoNombre = input.value.trim();
+    if (!nuevoNombre) {
+      mostrarToast('⚠️ El nombre no puede estar vacío', 'warning');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('nombre', nuevoNombre);
+    if (fileInput.files[0]) formData.append('escudo', fileInput.files[0]);
+
+    try {
+      const res = await fetch(`${API}/equipos/${id}`, {
+        method: 'PUT',
+        body: formData
+      });
+
+      if (!res.ok) throw new Error('Error al guardar equipo');
+
+      const data = await res.json();
+
+      // 🔹 Actualizar lista de equipos
+      await cargarEquipos();
+
+      // 🔹 Actualizar fixture
+      await cargarFixture();
+
+      // 🔹 Actualizar resultados
+      await cargarResultados();
+
+      // 🔹 Actualizar tabla de posiciones
+      await actualizarTablaPosiciones();
+
+      mostrarToast('💾 Equipo actualizado con éxito');
+
+    } catch (error) {
+      console.error(error);
+      mostrarToast('❌ Error al editar equipo', 'error');
+    }
+  }
+}
+
+// ---------- FIXTURE ----------
+async function cargarFixture() {
+  const res = await fetch(`${API}/fixture/${subsedeId}`);
+  let fixtureData = await res.json();
+
+  // 🔥 Solución: NO ocultar partidos
+  fixture = fixtureData;
+
+  // Ordenar por fecha y hora
+  fixture.sort((a, b) => {
+    const dateA = new Date(`${a.fecha}T${a.hora || '00:00'}`);
+    const dateB = new Date(`${b.fecha}T${b.hora || '00:00'}`);
+    return dateA - dateB;
+  });
+
+  const tbody = document.getElementById('listaFixture');
+  tbody.innerHTML = '';
+
+  // Agrupar partidos por fecha (jornadas)
+  let jornadas = {};
+  fixture.forEach(f => {
+    if (!jornadas[f.fecha]) jornadas[f.fecha] = [];
+    jornadas[f.fecha].push(f);
+  });
+
+  let jornadaNumero = 1;
+  for (const fecha in jornadas) {
+    const [year, month, day] = fecha.split('-');
+    const fechaFormateada = `${day}/${month}/${year}`;
+
+    // Fila de encabezado de jornada
+    const headerRow = document.createElement('tr');
+    headerRow.className = 'jornada-header';
+    headerRow.dataset.jornada = `jornada-${jornadaNumero}`;
+    headerRow.innerHTML = `
+      <td colspan="6" class="text-center fw-bold jornada-header-td">
+        Jornada ${jornadaNumero} - ${fechaFormateada}
+      </td>`;
+    tbody.appendChild(headerRow);
+
+    // Filas de partidos
+    jornadas[fecha].forEach(f => {
+      const localEquipo = equipos.find(e => e.id === f.local);
+      const visitanteEquipo = equipos.find(e => e.id === f.visitante);
+      const grupoPartido = f.grupo || "-";
+
+      const localHTML = localEquipo
+        ? `<img src="${API}${localEquipo.escudo}" width="30" height="30" class="me-1 escudo-equipo"> ${localEquipo.nombre}`
+        : '---';
+      const visitanteHTML = visitanteEquipo
+        ? `<img src="${API}${visitanteEquipo.escudo}" width="30" height="30" class="me-1 escudo-equipo"> ${visitanteEquipo.nombre}`
+        : '---';
+
+      const partidoRow = document.createElement('tr');
+      partidoRow.dataset.jornada = `jornada-${jornadaNumero}`;
+      partidoRow.innerHTML = `
+        <td>${f.canchaId || '-'}</td>
+        <td>${fechaFormateada}</td>
+        <td>${f.hora || '-'}</td>
+        <td>${localHTML}</td>
+        <td>vs</td>
+        <td>${visitanteHTML}</td>
+        <td>
+  <a href="partido.html?id=${f.id}" class="btn-icon btn-icon-success me-1">
+    <svg viewBox="0 0 24 24" width="16" height="16"><circle cx="12" cy="12" r="10"/></svg>
+    Ver
+  </a>
+  <button class="btn-icon btn-icon-primary me-1" onclick="editarPartido(${f.id})">
+    <svg viewBox="0 0 24 24" width="16" height="16"><path d="M12 20h9M16.5 3.5l4 4L7 21 3 21 3 17z"/></svg>
+    Editar
+  </button>
+  <button class="btn-icon btn-icon-danger" onclick="eliminarPartido(${f.id})">
+    <svg viewBox="0 0 24 24" width="16" height="16"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    Eliminar
+  </button>
+</td>`;
+      tbody.appendChild(partidoRow);
+    });
+
+    jornadaNumero++;
+  }
+
+  // Recargar resultados después de actualizar fixture
+  await cargarResultados();
+}
+
+async function descargarPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF("p", "pt", "a4");
+
+  const nombreSubsede = document.getElementById("nombreSubsede")?.textContent || "Amistad de Oro";
+  doc.setFontSize(16);
+  doc.text(`Fixture - ${nombreSubsede}`, 40, 40);
+
+  let y = 70; // posición vertical inicial
+  const jornadas = document.querySelectorAll("#listaFixture tr.table-secondary");
+
+  if (jornadas.length === 0) {
+    alert("No hay partidos cargados en el fixture.");
+    return;
+  }
+
+  jornadas.forEach((jornada, index) => {
+    const jornadaNombre = jornada.textContent.trim();
+    const jornadaID = jornada.dataset.jornada;
+
+    // título de jornada
+    doc.setFontSize(13);
+    doc.text(jornadaNombre, 40, y);
+    y += 10;
+
+    // recolectar filas de esa jornada
+    const partidos = document.querySelectorAll(`#listaFixture tr[data-jornada='${jornadaID}']:not(.table-secondary)`);
+    const body = [];
+
+    partidos.forEach(tr => {
+      const celdas = tr.querySelectorAll("td");
+      if (celdas.length >= 5) {
+        const fecha = celdas[0].innerText.trim();
+        const hora = celdas[1].innerText.trim();
+        const local = celdas[2].innerText.replace(/\s+/g, " ").trim();
+        const vs = celdas[3].innerText.trim();
+        const visitante = celdas[4].innerText.replace(/\s+/g, " ").trim();
+
+        if (local && visitante && local !== "---" && visitante !== "---") {
+          body.push([fecha, hora, local, vs, visitante]);
+        }
+      }
+    });
+
+    if (body.length > 0) {
+      doc.autoTable({
+        startY: y + 5,
+        head: [["Fecha", "Hora", "Local", "vs", "Visitante"]],
+        body: body,
+        styles: {
+          fontSize: 9,
+          cellPadding: 4,
+          halign: "center",
+          valign: "middle",
+          lineWidth: 0.1,
+          lineColor: [150, 150, 150],
+        },
+        headStyles: {
+          fillColor: [249, 174, 0],
+          textColor: [0, 0, 0],
+          fontStyle: "bold",
+        },
+        alternateRowStyles: { fillColor: [245, 245, 245] },
+        margin: { left: 40, right: 40 },
+      });
+
+      y = doc.lastAutoTable.finalY + 25;
+    } else {
+      y += 15;
+    }
+
+    // salto de página si la siguiente jornada no entra
+    if (index < jornadas.length - 1 && y > 700) {
+      doc.addPage();
+      y = 60;
+    }
+  });
+
+  doc.save(`fixture-${nombreSubsede}.pdf`);
+}
+
+let canchas = []; // 🔹 arreglo global de canchas
+
+// ---------- CARGAR CANCHAS ----------
+async function cargarCanchas(subsedeId) {
+  try {
+    const res = await fetch(`${API}/canchas/${subsedeId}`);
+    canchas = await res.json();
+
+    const selectCancha = document.getElementById('selectCancha');
+    selectCancha.innerHTML = '<option value="">--Cancha--</option>';
+
+    canchas.forEach(c => {
+      const option = document.createElement('option');
+      option.value = c.id;
+      option.textContent = c.nombre;
+      selectCancha.appendChild(option);
+    });
+  } catch (error) {
+    console.error("Error cargando canchas:", error);
+    mostrarToast('❌ Error cargando canchas', 'error');
+  }
+}
+
+// ---------- AGREGAR PARTIDO ----------
+async function agregarPartido() {
+  const selectLocal = document.getElementById('equipoLocal');
+  const selectVisitante = document.getElementById('equipoVisitante');
+  const selectCancha = document.getElementById('Cancha');
+  const fechaPartido = document.getElementById('fechaPartido');
+  const horaPartido = document.getElementById('horaPartido');
+  const grupoLocal = equipos.find(e => e.id == selectLocal.value)?.grupo || null;
+
+  if (!selectLocal.value || !selectVisitante.value || !fechaPartido.value || !selectCancha.value) {
+    mostrarToast('❌ Completa todos los campos', 'error');
+    return;
+  }
+
+  const partido = {
+    subsedeId,
+    local: selectLocal.value,
+    visitante: selectVisitante.value,
+    fecha: fechaPartido.value,
+    hora: horaPartido?.value || "",
+    canchaId: selectCancha.value,
+    grupo: grupoLocal 
+  };
+
+  try {
+    await fetch(`${API}/fixture`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(partido)
+    });
+
+    mostrarToast('✅ Partido agregado', 'success');
+    await cargarFixture();
+  } catch (error) {
+    console.error("Error agregando partido:", error);
+    mostrarToast('❌ Error agregando partido', 'error');
+  }
+}
+
+// ---------- RESULTADOS ----------
+let cacheResultados = "";
+async function cargarResultados() {
+  try {
+    const res = await fetch(`${API}/resultados/${subsedeId}`);
+    let resultadosData = await res.json();
+
+    // 🔹 Filtrar resultados cuyos equipos existen
+    const resultados = resultadosData.filter(r =>
+      equipos.some(e => e.id === r.local) &&
+      equipos.some(e => e.id === r.visitante)
+    );
+
+    const tbody = document.getElementById('listaResultados');
+    tbody.innerHTML = '';
+
+    if (!resultados.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">Aún no hay resultados.</td></tr>';
+      return;
+    }
+
+    // Ordenar por fecha y hora
+    resultados.sort((a, b) => {
+      const dateA = new Date(`${a.fecha}T${a.hora || '00:00'}`);
+      const dateB = new Date(`${b.fecha}T${b.hora || '00:00'}`);
+      return dateA - dateB;
+    });
+
+    // Agrupar por fecha (jornadas)
+    let jornadas = {};
+    resultados.forEach(r => {
+      if (!jornadas[r.fecha]) jornadas[r.fecha] = [];
+      jornadas[r.fecha].push(r);
+    });
+
+    let jornadaNumero = 1;
+    for (const fecha in jornadas) {
+      const [year, month, day] = fecha.split('-');
+      const fechaFormateada = `${day}/${month}/${year}`;
+
+      // Fila de encabezado de jornada
+      const headerRow = document.createElement('tr');
+      headerRow.className = 'table-secondary';
+      headerRow.dataset.jornada = `jornada-${jornadaNumero}`;
+      headerRow.innerHTML = `
+        <td colspan="6" class="text-center fw-bold">
+          Jornada ${jornadaNumero} - ${fechaFormateada}
+        </td>`;
+      tbody.appendChild(headerRow);
+
+      // Filas de resultados
+      jornadas[fecha].forEach(r => {
+        const localEquipo = equipos.find(e => e.id === r.local) || {};
+        const visitanteEquipo = equipos.find(e => e.id === r.visitante) || {};
+
+        const localHTML = localEquipo.nombre
+          ? `<img src="${API}${localEquipo.escudo}" width="30" height="30" class="me-1 escudo-equipo"> ${localEquipo.nombre}`
+          : '---';
+        const visitanteHTML = visitanteEquipo.nombre
+          ? `<img src="${API}${visitanteEquipo.escudo}" width="30" height="30" class="me-1 escudo-equipo"> ${visitanteEquipo.nombre}`
+          : '---';
+
+        const partidoRow = document.createElement('tr');
+        partidoRow.dataset.jornada = `jornada-${jornadaNumero}`;
+        partidoRow.innerHTML = `
+          <td>${r.canchaId || 'Sin cancha'}</td>
+          <td>${fechaFormateada}</td>
+          <td>${r.hora || '-'}</td>
+          <td>${localHTML}</td>
+          <td>${r.golesLocal ?? '-'}</td>
+          <td>${r.golesVisitante ?? '-'}</td>
+          <td>${visitanteHTML}</td>
+          <td><button class="btn btn-sm btn-danger" onclick="eliminarResultado(${r.id})">
+        Eliminar
+      </button>
+    </td>`;
+        tbody.appendChild(partidoRow);
+      });
+
+      jornadaNumero++;
+    }
+  } catch (error) {
+    console.error("Error cargando resultados:", error);
+  }
+}
+
+async function eliminarResultado(id) {
+  if (!confirm("¿Seguro que querés eliminar este resultado?")) return;
+
+  try {
+    const res = await fetch(`http://localhost:3000/resultados/${id}`, {
+      method: "DELETE",
+    });
+
+    const data = await res.json();
+
+    if (data.ok) {
+      // Opcional: remover el card del DOM
+      const card = document.getElementById(`partido-${id}`);
+      if (card) card.remove();
+
+      alert("Resultado eliminado correctamente");
+    } else {
+      alert("Error: " + (data.error || "No se pudo eliminar"));
+    }
+  } catch (err) {
+    alert("Error al eliminar: " + err.message);
+  }
+}
+
+async function descargarResultadosPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF("p", "pt", "a4");
+
+  const nombreSubsede = document.getElementById("nombreSubsede")?.textContent || "Amistad de Oro";
+  doc.setFontSize(16);
+  doc.text(`Resultados - ${nombreSubsede}`, 40, 40);
+
+  let y = 70;
+  const jornadas = document.querySelectorAll("#listaResultados tr.table-secondary");
+
+  if (jornadas.length === 0) {
+    alert("No hay resultados cargados.");
+    return;
+  }
+
+  jornadas.forEach((jornada, index) => {
+    const jornadaNombre = jornada.textContent.trim();
+    const jornadaID = jornada.dataset.jornada;
+
+    doc.setFontSize(13);
+    doc.text(jornadaNombre, 40, y);
+    y += 10;
+
+    const partidos = document.querySelectorAll(`#listaResultados tr[data-jornada='${jornadaID}']:not(.table-secondary)`);
+    const body = [];
+
+    partidos.forEach(tr => {
+      const celdas = tr.querySelectorAll("td");
+      if (celdas.length >= 6) {
+        const fecha = celdas[0].innerText.trim();
+        const hora = celdas[1].innerText.trim();
+        const local = celdas[2].innerText.replace(/\s+/g, " ").trim();
+        const golesLocal = celdas[3].innerText.trim();
+        const golesVisitante = celdas[4].innerText.trim();
+        const visitante = celdas[5].innerText.replace(/\s+/g, " ").trim();
+        const cancha = celdas[6]?.innerText.trim() || "-";
+
+        if (local && visitante && local !== "---" && visitante !== "---") {
+          body.push([fecha, hora, local, golesLocal, golesVisitante, visitante, cancha]);
+        }
+      }
+    });
+
+    if (body.length > 0) {
+      doc.autoTable({
+        startY: y + 5,
+        head: [["Cancha", "Fecha", "Hora", "Local", "Goles L", "Goles V", "Visitante"]],
+        body: body,
+        styles: {
+          fontSize: 9,
+          cellPadding: 4,
+          halign: "center",
+          valign: "middle",
+          lineWidth: 0.1,
+          lineColor: [150, 150, 150],
+        },
+        headStyles: {
+          fillColor: [226, 39, 29], // rojo del club
+          textColor: [255, 255, 255],
+          fontStyle: "bold",
+        },
+        alternateRowStyles: { fillColor: [245, 245, 245] },
+        margin: { left: 40, right: 40 },
+      });
+
+      y = doc.lastAutoTable.finalY + 25;
+    } else {
+      y += 15;
+    }
+
+    if (index < jornadas.length - 1 && y > 700) {
+      doc.addPage();
+      y = 60;
+    }
+  });
+
+  doc.save(`resultados-${nombreSubsede}.pdf`);
+}
+
+// ---------- AGREGAR / EDITAR PARTIDO ----------
+async function agregarPartido() {
+  const selectLocal = document.getElementById('equipoLocal');
+  const selectVisitante = document.getElementById('equipoVisitante');
+  const selectCancha = document.getElementById('Cancha');
+  const fechaPartido = document.getElementById('fechaPartido');
+  const horaPartido = document.getElementById('horaPartido');
+  if (!selectLocal.value || !selectVisitante.value || !fechaPartido.value || !selectCancha.value) {
+    mostrarToast('❌ Completa todos los campos', 'error');
+    return;
+  }
+
+  const partido = {
+    subsedeId,
+    local: selectLocal.value,
+    visitante: selectVisitante.value,
+    fecha: fechaPartido.value,
+    hora: horaPartido?.value || "",
+    canchaId: selectCancha.value   // 🔥 IMPORTANTE!
+  };
+
+  if (editandoId) {
+    await fetch(`${API}/fixture/${editandoId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(partido)
+    });
+    editandoId = null;
+    document.getElementById('btnGuardar').textContent = 'Agregar Partido';
+  } else {
+    await fetch(`${API}/fixture`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(partido)
+    });
+  }
+
+  limpiarFormulario();
+  await cargarFixture();
+}
+
+function editarPartido(id) {
+  const partido = fixture.find(p => p.id === id);
+  if (!partido) return;
+  editandoId = id;
+  document.getElementById('equipoLocal').value = partido.local;
+  document.getElementById('equipoVisitante').value = partido.visitante;
+  document.getElementById('fechaPartido').value = partido.fecha;
+  document.getElementById('horaPartido').value = partido.hora || '';
+  document.getElementById('Cancha').value = partido.canchaId || "";
+  document.getElementById('btnGuardar').textContent = 'Guardar Cambios';
+}
+
+async function eliminarPartido(id) {
+  if (!confirm('¿Seguro que querés eliminar este partido?')) return;
+  await fetch(`${API}/fixture/${id}`, { method: 'DELETE' });
+  await cargarFixture();
+}
+
+function limpiarFormulario() {
+  const selCancha = document.getElementById('Cancha');
+  const hora = document.getElementById('horaPartido');
+
+  document.getElementById('equipoLocal').value = '';
+  document.getElementById('equipoVisitante').value = '';
+  document.getElementById('fechaPartido').value = '';
+
+  if (hora) hora.value = '';
+  if (selCancha) selCancha.value = '';
+}
+
+function volver() { window.location.href = 'index.html'; }
+
+document.addEventListener('keypress', e => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    agregarPartido();
+  }
+});
+
+(async () => {
+  await cargarNombreSubsede();
+  await cargarEquipos();
+  await cargarFixture();
+  setInterval(cargarResultados, 10000);
+})();
+
+// 🔢 TABLA DE POSICIONES
+
+async function actualizarTablaPosiciones() {
+  const res = await fetch(`${API}/posiciones/${subsedeId}`);
+  const posiciones = await res.json();
+
+  const container = document.getElementById("contenedorTablasPosiciones");
+  container.innerHTML = ""; // Limpia antes de renderizar
+
+  if (!posiciones || Object.keys(posiciones).length === 0) {
+    const p = document.createElement("p");
+    p.className = "text-center text-muted";
+    p.textContent = "No hay posiciones cargadas aún.";
+    container.appendChild(p);
+    return;
+  }
+
+  // Recorrer grupos y generar una tabla por cada uno
+  Object.keys(posiciones)
+    .sort((a,b) => a.localeCompare(b, undefined, {numeric: true}))
+    .forEach(grupo => {
+
+      const equipos = Object.values(posiciones[grupo])
+        .sort((a,b) => b.pts - a.pts || b.dif - a.dif || b.gf - a.gf);
+
+      // Título del grupo
+      const h4 = document.createElement("h4");
+      h4.className = "mt-3 text-warning";
+      h4.textContent = `Grupo ${grupo}`;
+      container.appendChild(h4);
+
+      // Crear tabla
+      const table = document.createElement("table");
+      table.className = "tabla-liquid";
+
+      // Encabezado
+      const thead = document.createElement("thead");
+      const trHead = document.createElement("tr");
+      ["#", "Equipo", "PJ","PG","PE","PP","GF","GC","DIF","PTS"].forEach(text => {
+        const th = document.createElement("th");
+        th.textContent = text;
+        trHead.appendChild(th);
+      });
+      thead.appendChild(trHead);
+      table.appendChild(thead);
+
+      // Cuerpo
+      const tbody = document.createElement("tbody");
+
+      equipos.forEach((e, i) => {
+        const tr = document.createElement("tr");
+        if (i === 0) {
+          tr.style.background = "#ebaa01";
+          tr.style.color = "#000";
+          tr.style.fontWeight = "bold";
+        }
+
+        // Columna #
+        let td = document.createElement("td");
+        td.textContent = i + 1;
+        tr.appendChild(td);
+
+        // Columna Equipo con escudo
+        td = document.createElement("td");
+        if (e.escudo) {
+          const img = document.createElement("img");
+          img.src = e.escudo.startsWith('http') ? e.escudo : `${API}/${e.escudo}`;
+          img.alt = e.nombre;
+          img.className = "escudo";
+          td.appendChild(img);
+        }  
+        td.appendChild(document.createTextNode(` ${e.nombre}`));
+        tr.appendChild(td);
+
+        // Otras columnas
+        ["pj","pg","pe","pp","gf","gc","dif"].forEach(prop => {
+          const td = document.createElement("td");
+          td.textContent = e[prop];
+          tr.appendChild(td);
+        });
+
+        // PTS
+        td = document.createElement("td");
+        const b = document.createElement("b");
+        b.textContent = e.pts;
+        td.appendChild(b);
+        tr.appendChild(td);
+
+        tbody.appendChild(tr);
+      });
+
+      table.appendChild(tbody);
+      container.appendChild(table);
+  });
+}
+
+  // 🏆 Descargar tabla de posiciones en PDF sin alternado
+async function descargarPosicionesPDF() {
+  const contenedor = document.getElementById("contenedorTablasPosiciones");
+  if (!contenedor) return alert("No hay posiciones para exportar");
+
+  try {
+    const { jsPDF } = window.jspdf;
+
+    // Captura todo el contenedor como imagen
+    const canvas = await html2canvas(contenedor, { scale: 3, backgroundColor: "#111" });
+    const imgData = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    // Ajustar la imagen al ancho de la página con proporción
+    const imgProps = {
+      width: canvas.width,
+      height: canvas.height
+    };
+    const pdfWidth = pageWidth - 10; // margen 5mm cada lado
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+    let position = 5; // margen superior
+    let remainingHeight = pdfHeight;
+
+    // Si la imagen es más alta que la página, la dividimos en varias páginas
+    while (remainingHeight > 0) {
+      pdf.addImage(imgData, "PNG", 5, position, pdfWidth, pdfHeight, undefined, "FAST");
+      remainingHeight -= pageHeight - 10; // descontamos margen superior e inferior
+      if (remainingHeight > 0) {
+        pdf.addPage();
+        position = 0;
+      }
+    }
+
+    pdf.save("posiciones.pdf");
+  } catch (error) {
+    console.error("Error generando PDF:", error);
+    alert("No se pudo generar el PDF. Revisa la consola.");
+  }
+}
+
+
+    // ===========================
+    // 🔁 Inicialización
+    // ===========================
+    document.addEventListener("DOMContentLoaded", async () => {
+      await cargarNombreSubsede();
+      await cargarEquipos();
+      await cargarFixture();
+      // await cargarCanchas();
+      await actualizarTablaPosiciones();
+      setInterval(() => {
+        cargarResultados();
+        actualizarTablaPosiciones();
+      }, 10000);
+    });
+
+    function mostrarToast(msg){
+  alert(msg);
+}
+
+</script>
+
+</body>
+</html>

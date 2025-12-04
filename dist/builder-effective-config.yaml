@@ -1,0 +1,19 @@
+directories:
+  output: dist
+  buildResources: desktop
+appId: com.amistad.oro
+productName: Amistad de Oro
+win:
+  target: nsis
+extraResources:
+  - from: server.js
+    to: server.js
+  - from: public
+    to: public
+  - from: data
+    to: data
+publish:
+  - provider: generic
+    url: https://TUDOMINIO.com/updates/
+files: []
+electronVersion: 26.6.10

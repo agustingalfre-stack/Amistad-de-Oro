@@ -1,0 +1,289 @@
+/* =====================
+   BODY Y TIPOGRAFÍA
+   ===================== */
+body {
+    font-family: 'Graphik', sans-serif;
+    background: #141416;
+    color: #EDEDED;
+    padding: 20px;
+    margin: 0;
+}
+
+/* =====================
+   TÍTULOS
+   ===================== */
+h1, h2 {
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-shadow: none;
+    margin-bottom: 16px;
+}
+
+/* =====================
+   TARJETAS LIQUID GLASS
+   ===================== */
+.card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.10);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: 18px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.35);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/* =====================
+   INPUTS TRANSLÚCIDOS
+   ===================== */
+.form-control {
+    background: rgba(255,255,255,0.08) !important;
+    border: 1px solid rgba(255,255,255,0.15) !important;
+    color: #000000 !important;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    transition: 0.2s;
+}
+
+.form-control:focus {
+    background: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: none;
+}
+
+input[type="text"].form-control-sm {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-radius: 10px !important;
+}
+
+/* =====================
+   BOTONES GLASS
+   ===================== */
+.btn {
+    border-radius: 12px;
+    font-weight: 600;
+    padding: 8px 16px;
+    transition: 0.25s ease;
+    color: #fff !important;
+    border: none !important;
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+}
+
+/* Amarillo (ver/agregar) */
+.btn-success {
+    background: rgba(235,169,0,0.55);
+    border: 1px solid rgba(235,169,0,0.3);
+}
+.btn-success:hover {
+    background: rgba(235,169,0,0.75);
+    transform: translateY(-2px);
+}
+
+/* Verde (editar) */
+.btn-primary {
+    background: rgba(0,155,78,0.55);
+    border: 1px solid rgba(0,155,78,0.35);
+}
+.btn-primary:hover {
+    background: rgba(0,155,78,0.75);
+    transform: translateY(-2px);
+}
+
+/* Rojo (eliminar) */
+.btn-danger {
+    background: rgba(225,37,27,0.55);
+    border: 1px solid rgba(225,37,27,0.35);
+}
+.btn-danger:hover {
+    background: rgba(225,37,27,0.75);
+    transform: translateY(-2px);
+}
+
+/* =====================
+   BOTONES CON ICONOS SVG
+   ===================== */
+.btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: 0.25s ease;
+    color: #fff;
+    border: none;
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+}
+
+.btn-icon svg {
+    width: 18px;
+    height: 18px;
+    margin-right: 6px;
+    stroke: currentColor;
+    fill: none;
+    transition: 0.2s ease;
+}
+
+/* Variantes de color */
+.btn-icon-success {
+    background: rgba(235,169,0,0.55);
+    border: 1px solid rgba(235,169,0,0.3);
+}
+.btn-icon-success:hover {
+    background: rgba(235,169,0,0.75);
+    transform: translateY(-2px);
+}
+
+.btn-icon-primary {
+    background: rgba(0,155,78,0.55);
+    border: 1px solid rgba(0,155,78,0.35);
+}
+.btn-icon-primary:hover {
+    background: rgba(0,155,78,0.75);
+    transform: translateY(-2px);
+}
+
+.btn-icon-danger {
+    background: rgba(225,37,27,0.55);
+    border: 1px solid rgba(225,37,27,0.35);
+}
+.btn-icon-danger:hover {
+    background: rgba(225,37,27,0.75);
+    transform: translateY(-2px);
+}
+
+/* =====================
+   LISTAS GLASS
+   ===================== */
+.list-group {
+    padding-left: 0;
+    list-style: none;
+    margin-top: 10px;
+}
+
+.list-group-item {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.10);
+    backdrop-filter: blur(10px);
+    color: #eee;
+    border-radius: 14px !important;
+    margin-bottom: 10px;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.list-group-item:hover {
+    background: rgba(255,255,255,0.10);
+    transform: translateY(-2px);
+}
+
+/* =====================
+   INPUT-GROUP FLEX
+   ===================== */
+.input-group {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+/* =====================
+   CENTRAR IMÁGENES DE LOGO
+   ===================== */
+.text-center img {
+    max-width: 160px;
+    height: auto;
+}
+.tabla-liquid {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #f1f1f1;
+  background: rgba(255, 255, 255, 0.05); /* transparencia tipo vidrio */
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  border-radius: 15px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+/* Cabecera */
+.tabla-liquid thead th {
+  background: rgba(255,255,255,0.1);
+  padding: 12px;
+  text-align: center;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+
+/* Filas */
+.tabla-liquid tbody tr {
+  transition: background 0.3s, transform 0.2s;
+}
+
+.tabla-liquid tbody tr:hover {
+  background: rgba(255,255,255,0.08);
+  transform: translateY(-2px);
+}
+
+/* Celdas */
+.tabla-liquid td {
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+/* Botones dentro de la tabla */
+.tabla-liquid td .btn {
+  font-size: 0.85rem;
+  padding: 5px 10px;
+  backdrop-filter: blur(6px);
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  border-radius: 8px;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.tabla-liquid td .btn:hover {
+  background: rgba(255,255,255,0.15);
+  transform: scale(1.05);
+}
+.titulo-grupo {
+  background-color: #f0f0f0; /* Fondo */
+  color: #121212; /* Color del texto */
+}
+
+.jornada-header {
+  background-color: rgba(255, 255, 255, 0.01) !important;  /* color de fondo */
+}
+
+.jornada-header-td {
+  color: #ffffff !important;          /* color del texto */
+  padding: 8px !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+}
+
+/* obliga a la tabla a no dejar espacios internos */
+table {
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  width: 100% !important;
+}
+.escudo {
+  width: 24px;       /* tamaño del escudo */
+  height: 24px;
+  object-fit: contain;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+
+
+

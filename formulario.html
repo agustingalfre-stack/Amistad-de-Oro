@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Cargar Equipo - Amistad de Oro</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    form {
+      background: #222;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px red;
+      width: 320px;
+      text-align: center;
+    }
+
+    input {
+      display: block;
+      margin: 8px auto;
+      padding: 8px;
+      width: 90%;
+      border: none;
+      border-radius: 5px;
+    }
+
+    button {
+      background: red;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: darkred;
+    }
+
+    #mensaje {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    #verTabla {
+      display: none;
+      margin-top: 20px;
+      background: black;
+      border: 2px solid red;
+      color: red;
+      padding: 10px 15px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    #verTabla:hover {
+      background: red;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <h1>🏆 Cargar Equipo</h1>
+
+  <form id="formEquipo">
+    <input type="text" id="nombre" placeholder="Nombre del equipo" required>
+    <input type="number" id="jugados" placeholder="Partidos jugados" required>
+    <input type="number" id="ganados" placeholder="Ganados" required>
+    <input type="number" id="empatados" placeholder="Empatados" required>
+    <input type="number" id="perdidos" placeholder="Perdidos" required>
+    <input type="number" id="puntos" placeholder="Puntos" required>
+    <button type="submit">Cargar</button>
+    <p id="mensaje"></p>
+  </form>
+
+  <a id="verTabla" href="tabla.html">📊 Ver Tabla de Posiciones</a>
+
+  <script>
+    const form = document.getElementById('formEquipo');
+    const mensaje = document.getElementById('mensaje');
+    const verTabla = document.getElementById('verTabla');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const equipo = {
+        nombre: document.getElementById('nombre').value,
+        jugados: document.getElementById('jugados').value,
+        ganados: document.getElementById('ganados').value,
+        empatados: document.getElementById('empatados').value,
+        perdidos: document.getElementById('perdidos').value,
+        puntos: document.getElementById('puntos').value
+      };
+
+      mensaje.textContent = "Cargando...";
+      mensaje.style.color = "yellow";
+      verTabla.style.display = "none";
+
+      try {
+        const response = await fetch('http://localhost:3000/equipos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(equipo)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          mensaje.textContent = "✅ " + data.mensaje;
+          mensaje.style.color = "lightgreen";
+          form.reset();
+          verTabla.style.display = "inline-block";
+        } else {
+          mensaje.textContent = "❌ Error: " + data.error;
+          mensaje.style.color = "red";
+        }
+
+      } catch (error) {
+        mensaje.textContent = "❌ Error al conectar con el servidor";
+        mensaje.style.color = "red";
+      }
+    });
+  </script>
+</body>
+</html>
