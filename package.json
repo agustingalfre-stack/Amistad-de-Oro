@@ -1,56 +1,8 @@
 {
-  "name": "amistad-de-oro",
+  "name": "amistad-de-oro-api",
   "version": "1.0.0",
-  "description": "App de torneo de fútbol - servidor y escritorio con Electron",
-  "main": "desktop/main.js",
+  "main": "server.js",
   "scripts": {
-    "start": "electron .",
-    "server": "node server.js",
-    "dev": "concurrently \"npm run server\" \"npm start\"",
-    "dist": "electron-builder"
-  },
-  "author": "Agustin",
-  "license": "MIT",
-  "dependencies": {
-    "better-sqlite3": "^12.4.1",
-    "cors": "^2.8.5",
-    "dist": "^0.1.2",
-    "express": "^4.18.2",
-    "multer": "^2.0.0"
-  },
-  "devDependencies": {
-    "concurrently": "^8.2.0",
-    "electron": "^26.0.0",
-    "electron-rebuild": "^3.2.9"
-  },
-  "build": {
-    "appId": "com.amistad.oro",
-    "productName": "Amistad de Oro",
-    "directories": {
-      "buildResources": "desktop"
-    },
-    "win": {
-      "target": "nsis"
-    },
-    "extraResources": [
-      {
-        "from": "server.js",
-        "to": "server.js"
-      },
-      {
-        "from": "public",
-        "to": "public"
-      },
-      {
-        "from": "data",
-        "to": "data"
-      }
-    ],
-    "publish": [
-      {
-        "provider": "generic",
-        "url": "https://TUDOMINIO.com/updates/"
-      }
-    ]
+    "start": "node server.js"
   }
 }
